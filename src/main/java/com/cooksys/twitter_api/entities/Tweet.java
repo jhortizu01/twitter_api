@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import java.sql.Timestamp;
 import java.util.List;
 
-@Table(name="tweet")
+@Table(name = "tweet")
 @Entity
 @NoArgsConstructor
 @Data
@@ -23,11 +23,6 @@ public class Tweet {
 
     private String content;
 
-    
-    
-    
-    
-    
     @ManyToMany
     @JoinTable(name = "tweet_hashtags",
             joinColumns = {@JoinColumn(name = "tweet_id")},

@@ -9,7 +9,7 @@ import com.cooksys.twitter_api.entities.User;
 public interface UserMapper {
 	
 	UserRequestDto userEntitytoDto(User user);
+
 	User userRequestDtoToEntity(UserRequestDto userRequestDto);
-	
 	
 }

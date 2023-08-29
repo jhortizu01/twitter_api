@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Table(name="hashtag")
 @Entity
@@ -24,5 +25,8 @@ public class Hashtag {
     private Timestamp firstUsed;
 
     private Timestamp lastUsed;
+
+    @ManyToMany(mappedBy = "hashtags")
+    private List<Tweet> tweets;
 
 }

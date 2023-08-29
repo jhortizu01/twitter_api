@@ -22,4 +22,12 @@ public class User {
     @Embedded
     private Profile profile;
 
+
+    /**
+     * For followers_following table
+     *  one user would have many followers & one user could be following many people
+     *  many to many relationship between followers and following
+     */
+
+
 }

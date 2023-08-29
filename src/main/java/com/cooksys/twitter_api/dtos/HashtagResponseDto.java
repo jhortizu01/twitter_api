@@ -1,14 +1,17 @@
 package com.cooksys.twitter_api.dtos;
 
+import java.sql.Timestamp;
+
+import jakarta.persistence.Column;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
-
 @NoArgsConstructor
 @Data
-public class HashtagDto {
-
+public class HashtagResponseDto {
+	
+	
+	@Column(unique = true, nullable = false)
     private String label;
 
     private Timestamp firstUsed;

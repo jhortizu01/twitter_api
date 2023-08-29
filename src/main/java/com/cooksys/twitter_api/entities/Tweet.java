@@ -23,6 +23,11 @@ public class Tweet {
 
     private String content;
 
+    
+    
+    
+    
+    
     @ManyToMany
     @JoinTable(name = "tweet_hashtags",
             joinColumns = {@JoinColumn(name = "tweet_id")},

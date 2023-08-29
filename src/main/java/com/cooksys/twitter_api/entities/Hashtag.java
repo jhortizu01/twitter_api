@@ -1,11 +1,9 @@
 package com.cooksys.twitter_api.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
@@ -19,8 +17,10 @@ public class Hashtag {
     @GeneratedValue
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String label;
 
+    @CreationTimestamp
     private Timestamp firstUsed;
 
     private Timestamp lastUsed;

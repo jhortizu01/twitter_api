@@ -1,11 +1,11 @@
 package com.cooksys.twitter_api.entities.embeddable;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-// @Entity
 @Embeddable
 @NoArgsConstructor
 @Data

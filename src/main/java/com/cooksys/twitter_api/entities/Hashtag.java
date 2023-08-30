@@ -8,25 +8,25 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.sql.Timestamp;
 import java.util.List;
 
-@Table(name="hashtag")
+@Table(name = "hashtag")
 @Entity
 @NoArgsConstructor
 @Data
 public class Hashtag {
 
-    @Id
-    @GeneratedValue
-    private Long id;
+	@Id
+	@GeneratedValue
+	private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String label;
+	@Column(nullable = false, unique = true)
+	private String label;
 
-    @CreationTimestamp
-    private Timestamp firstUsed;
+	@CreationTimestamp
+	private Timestamp firstUsed;
 
-    private Timestamp lastUsed;
+	private Timestamp lastUsed;
 
-    @ManyToMany(mappedBy = "hashtags")
-    private List<Tweet> tweets;
+ @ManyToMany(mappedBy = "hashtags") 
+ private List<Tweet> tweets;
 
 }

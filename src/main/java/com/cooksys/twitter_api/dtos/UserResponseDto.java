@@ -2,8 +2,6 @@ package com.cooksys.twitter_api.dtos;
 
 import java.sql.Timestamp;
 
-import com.cooksys.twitter_api.entities.embeddable.Profile;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +11,7 @@ public class UserResponseDto {
 
 	private String username;
 
-	private Profile profile;
+	private ProfileDto profile;
 
 	private Timestamp joined;
 }

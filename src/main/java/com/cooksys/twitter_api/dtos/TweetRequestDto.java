@@ -1,7 +1,5 @@
 package com.cooksys.twitter_api.dtos;
 
-import com.cooksys.twitter_api.entities.embeddable.Credentials;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +10,6 @@ public class TweetRequestDto {
 
    private String content;
    
-   private Credentials credentials;
+   private CredentialsDto credentials;
 
 }

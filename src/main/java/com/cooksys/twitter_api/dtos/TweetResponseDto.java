@@ -1,10 +1,9 @@
 package com.cooksys.twitter_api.dtos;
 
-import com.cooksys.twitter_api.entities.Tweet;
+import java.sql.Timestamp;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.sql.Timestamp;
 
 
 @NoArgsConstructor
@@ -19,7 +18,7 @@ public class TweetResponseDto {
 
     private String content;
 
-    private Tweet inReplyTo;
+    private TweetResponseDto inReplyTo;
 
-    private Tweet repostOf;
+    private TweetResponseDto repostOf;
 }

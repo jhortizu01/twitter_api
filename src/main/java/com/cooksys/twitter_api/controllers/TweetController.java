@@ -1,12 +1,11 @@
 package com.cooksys.twitter_api.controllers;
 
+import com.cooksys.twitter_api.dtos.TweetRequestDto;
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
 import com.cooksys.twitter_api.services.TweetService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,4 +26,14 @@ public class TweetController {
         return tweetService.getTweetById(id);
     }
 
+    @PostMapping("/{id}/reply")
+    @ResponseStatus(HttpStatus.CREATED)
+    public TweetResponseDto replyTweetById(@PathVariable Long id, @RequestBody TweetRequestDto tweetRequestDto) {
+        return tweetService.replyTweetById(id, tweetRequestDto);
+    }
+
+    @GetMapping("/{id}/replies")
+    public List<TweetResponseDto> getReplyToTweetById(@PathVariable Long id) {
+        return tweetService.getRepliesToTweetById(id);
+    }
 }

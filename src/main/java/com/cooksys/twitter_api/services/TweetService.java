@@ -1,5 +1,6 @@
 package com.cooksys.twitter_api.services;
 
+import com.cooksys.twitter_api.dtos.TweetRequestDto;
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
 import com.cooksys.twitter_api.entities.Tweet;
 
@@ -12,4 +13,8 @@ public interface TweetService {
     Tweet getTweet(Long id);
 
     TweetResponseDto getTweetById(Long id);
+
+    TweetResponseDto replyTweetById(Long id, TweetRequestDto tweetRequestDto);
+
+    List<TweetResponseDto> getRepliesToTweetById(Long id);
 }

@@ -1,6 +1,9 @@
 package com.cooksys.twitter_api.mappers;
 
 import com.cooksys.twitter_api.dtos.UserResponseDto;
+
+import java.util.List;
+
 import org.mapstruct.Mapper;
 
 import com.cooksys.twitter_api.dtos.UserRequestDto;
@@ -16,5 +19,9 @@ public interface UserMapper {
 	UserRequestDto userEntitytoDto(User user);
 
 	User userRequestDtoToEntity(UserRequestDto userRequestDto);
+
+	List<UserResponseDto> entitiesToDtos(List<User> entities);
+	
+	
 
 }

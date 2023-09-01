@@ -2,6 +2,7 @@ package com.cooksys.twitter_api.controllers;
 
 import com.cooksys.twitter_api.dtos.HashtagDto;
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
+import com.cooksys.twitter_api.dtos.UserResponseDto;
 import com.cooksys.twitter_api.entities.embeddable.Credentials;
 import com.cooksys.twitter_api.services.TweetService;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,11 @@ public class TweetController {
     @PostMapping("/{id}/like")
     public void addLikeToTweet(@PathVariable Long id, @RequestBody Credentials credentials) {
         tweetService.addLikeToTweet(id, credentials);
+    }
+
+    @GetMapping("/{id}/likes")
+    public List<UserResponseDto> getTweetLikes(@PathVariable Long id) {
+        return tweetService.getTweetLikes(id);
     }
 
     @GetMapping("/{id}/tags")

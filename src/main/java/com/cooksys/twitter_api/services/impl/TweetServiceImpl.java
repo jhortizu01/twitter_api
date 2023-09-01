@@ -2,6 +2,7 @@ package com.cooksys.twitter_api.services.impl;
 
 import com.cooksys.twitter_api.dtos.HashtagDto;
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
+import com.cooksys.twitter_api.dtos.UserResponseDto;
 import com.cooksys.twitter_api.entities.Tweet;
 import com.cooksys.twitter_api.entities.User;
 import com.cooksys.twitter_api.entities.embeddable.Credentials;
@@ -9,6 +10,7 @@ import com.cooksys.twitter_api.exceptions.NotAuthorizedException;
 import com.cooksys.twitter_api.exceptions.NotFoundException;
 import com.cooksys.twitter_api.mappers.HashtagMapper;
 import com.cooksys.twitter_api.mappers.TweetMapper;
+import com.cooksys.twitter_api.mappers.UserMapper;
 import com.cooksys.twitter_api.repositories.TweetRepository;
 import com.cooksys.twitter_api.repositories.UserRepository;
 import com.cooksys.twitter_api.services.TweetService;
@@ -26,6 +28,7 @@ public class TweetServiceImpl implements TweetService {
     private final TweetRepository tweetRepository;
     private final UserRepository userRepository;
     private final HashtagMapper hashtagMapper;
+    private final UserMapper userMapper;
 
     private User getUser(Credentials credentials) {
         Optional<User> optionalUser = userRepository.findByCredentials(credentials);
@@ -82,6 +85,11 @@ public class TweetServiceImpl implements TweetService {
     @Override
     public List<HashtagDto> getTweetByTag(Long id) {
         return hashtagMapper.entitiesToDtos(getTweet(id).getHashtags());
+    }
+
+    @Override
+    public List<UserResponseDto> getTweetLikes(Long id) {
+        return userMapper.entitiesToDtos(getTweet(id).getLikedByUsers());
     }
 
 }

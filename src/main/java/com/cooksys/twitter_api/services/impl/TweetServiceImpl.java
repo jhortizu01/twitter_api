@@ -4,10 +4,8 @@ import com.cooksys.twitter_api.dtos.HashtagDto;
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
 import com.cooksys.twitter_api.entities.Tweet;
 import com.cooksys.twitter_api.entities.User;
-
 import com.cooksys.twitter_api.entities.embeddable.Credentials;
 import com.cooksys.twitter_api.exceptions.NotAuthorizedException;
-
 import com.cooksys.twitter_api.exceptions.NotFoundException;
 import com.cooksys.twitter_api.mappers.HashtagMapper;
 import com.cooksys.twitter_api.mappers.TweetMapper;
@@ -38,6 +36,11 @@ public class TweetServiceImpl implements TweetService {
         return optionalUser.get();
     }
 
+    private User getUserByUsername(String username) {
+        Optional<User> optionalUser = userRepository.findByCredentialsUsername(username);
+        return optionalUser.orElse(null);
+    }
+
     @Override
     public Tweet getTweet(Long id) {
         Optional<Tweet> optionalTweet = tweetRepository.findById(id);
@@ -58,8 +61,7 @@ public class TweetServiceImpl implements TweetService {
     public TweetResponseDto getTweetById(Long id) {
         return tweetMapper.tweetToDto(getTweet(id));
     }
-    
-    
+
 
     @Override
     public TweetResponseDto deleteTweetById(Long id, Credentials credentials) {
@@ -87,6 +89,17 @@ public class TweetServiceImpl implements TweetService {
     @Override
     public List<HashtagDto> getTweetByTag(Long id) {
         return hashtagMapper.entitiesToDtos(getTweet(id).getHashtags());
+    }
+
+    // TODO: Add code to sort response in reverse chronological order
+    @Override
+    public List<TweetResponseDto> getUsernameMentions(String username) {
+        User user = getUserByUsername(username);
+        if (user == null || user.isDeleted())
+            throw new NotFoundException("Invalid. Please try again.");
+
+        List<Tweet> mentions = user.getMentionedTweets().stream().filter(tweet -> !tweet.isDeleted()).toList();
+        return tweetMapper.entitiesToDtos(mentions);
     }
 
 }

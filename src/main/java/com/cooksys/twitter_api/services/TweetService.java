@@ -21,4 +21,5 @@ public interface TweetService {
 
     List<HashtagDto> getTweetByTag(Long id);
 
+    List<TweetResponseDto> getUsernameMentions(String username);
 }

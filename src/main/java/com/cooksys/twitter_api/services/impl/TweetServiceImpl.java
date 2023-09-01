@@ -27,7 +27,7 @@ public class TweetServiceImpl implements TweetService {
     private final UserRepository userRepository;
     private final HashtagMapper hashtagMapper;
 
-    private User validateUser(Credentials credentials) {
+    private User getUser(Credentials credentials) {
         Optional<User> optionalUser = userRepository.findByCredentials(credentials);
         if (optionalUser.isEmpty() || optionalUser.get().isDeleted()) {
             throw new NotFoundException("Invalid credentials. Please try again.");
@@ -36,7 +36,7 @@ public class TweetServiceImpl implements TweetService {
     }
 
     @Override
-    public Tweet validateTweet(Long id) {
+    public Tweet getTweet(Long id) {
         Optional<Tweet> optionalUser = tweetRepository.findById(id);
         if (optionalUser.isEmpty() || optionalUser.get().isDeleted()) {
             throw new NotFoundException("No tweet with id: " + id);
@@ -53,13 +53,13 @@ public class TweetServiceImpl implements TweetService {
 
     @Override
     public TweetResponseDto getTweetById(Long id) {
-        return tweetMapper.tweetToDto(validateTweet(id));
+        return tweetMapper.tweetToDto(getTweet(id));
     }
 
     @Override
     public TweetResponseDto deleteTweetById(Long id, Credentials credentials) {
-        Tweet tweet = validateTweet(id);
-        User user = validateUser(credentials);
+        Tweet tweet = getTweet(id);
+        User user = getUser(credentials);
         if (user != tweet.getAuthor())
             throw new NotAuthorizedException("Tweet has not been deleted. Entered credentials do not match tweet author.");
         tweet.setDeleted(true);
@@ -68,8 +68,8 @@ public class TweetServiceImpl implements TweetService {
 
     @Override
     public void addLikeToTweet(Long id, Credentials credentials) {
-        Tweet tweet = validateTweet(id);
-        User user = validateUser(credentials);
+        Tweet tweet = getTweet(id);
+        User user = getUser(credentials);
         if (!user.getLikedTweets().contains(tweet)) {
             user.getLikedTweets().add(tweet);
             tweet.getLikedByUsers().add(user);
@@ -81,7 +81,7 @@ public class TweetServiceImpl implements TweetService {
 
     @Override
     public List<HashtagDto> getTweetByTag(Long id) {
-        return hashtagMapper.entitiesToDtos(validateTweet(id).getHashtags());
+        return hashtagMapper.entitiesToDtos(getTweet(id).getHashtags());
     }
 
 }

@@ -11,7 +11,7 @@ public interface TweetService {
 
     List<TweetResponseDto> getAllActiveTweets();
 
-    Tweet validateTweet(Long id);
+    Tweet getTweet(Long id);
 
     TweetResponseDto getTweetById(Long id);
 

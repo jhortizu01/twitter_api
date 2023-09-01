@@ -1,8 +1,11 @@
 package com.cooksys.twitter_api.services.impl;
 
+import com.cooksys.twitter_api.dtos.TweetResponseDto;
+import com.cooksys.twitter_api.dtos.UserRequestDto;
 import com.cooksys.twitter_api.dtos.UserResponseDto;
 import com.cooksys.twitter_api.entities.User;
 import com.cooksys.twitter_api.exceptions.NotFoundException;
+import com.cooksys.twitter_api.mappers.TweetMapper;
 import com.cooksys.twitter_api.mappers.UserMapper;
 import com.cooksys.twitter_api.repositories.UserRepository;
 import com.cooksys.twitter_api.services.UserService;
@@ -17,6 +20,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
     private final UserRepository userRepository;
+    private final TweetMapper tweetMapper;
 
     @Override
     public UserResponseDto getSpecificUser(String username) {
@@ -26,5 +30,31 @@ public class UserServiceImpl implements UserService {
         }
 
         return userMapper.entityToDto(user.get(0));
+    }
+
+    @Override
+    public List<TweetResponseDto> getUserTweets(String username) {
+        List<User> user = userRepository.findByCredentialsUsername(username);
+        if(user.isEmpty()) {
+            throw new NotFoundException("No user with username: " + username);
+        }
+
+        return tweetMapper.entitiesToDtos(user.get(0).getTweets());
+    }
+
+    @Override
+    public UserResponseDto updateUser(String username, UserRequestDto userRequestDto) {
+
+        List<User> user = userRepository.findByCredentialsUsername(username);
+
+        if(user.isEmpty()) {
+            throw new NotFoundException("No user with username: " + username);
+        }
+
+        User userEntity = userMapper.userRequestDtoToEntity(userRequestDto);
+
+        user.get(0).setCredentials(userEntity.getCredentials());
+        user.get(0).setProfile(userEntity.getProfile());
+        return userMapper.entityToDto(userRepository.saveAndFlush(user.get(0)));
     }
 }

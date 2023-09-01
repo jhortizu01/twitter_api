@@ -6,6 +6,7 @@ import com.cooksys.twitter_api.dtos.UserRequestDto;
 import com.cooksys.twitter_api.dtos.UserResponseDto;
 import com.cooksys.twitter_api.entities.Tweet;
 import com.cooksys.twitter_api.entities.User;
+import com.cooksys.twitter_api.exceptions.BadRequestException;
 import com.cooksys.twitter_api.exceptions.NotFoundException;
 import com.cooksys.twitter_api.mappers.TweetMapper;
 import com.cooksys.twitter_api.mappers.UserMapper;
@@ -86,18 +87,36 @@ public class UserServiceImpl implements UserService {
 		return tweetMapper.entitiesToDtos(mentions);
 	}
 
+	// TODO: User is being created but variable 'phoneNumber' is not populating
+
 	@Override
 	public UserResponseDto createUser(UserRequestDto userRequestDto) {
 		User user = getUserByUsername(userRequestDto.getCredentials().getUsername());
-		// if (user == null) {
-		// 	user = userMapper.
-		// }
-		return null;
+		if (user == null) {
+			user = userMapper.userRequestDtoToEntity(userRequestDto);
+		} else if (user.isDeleted()) {
+			user.setCredentials(user.getCredentials());
+			user.setProfile(user.getProfile());
+			user.setDeleted(false);
+		}
+		else
+			throw new BadRequestException("Username must be unique");
+		validateUser(user);
+		return userMapper.entityToDto(userRepository.saveAndFlush(user));
 	}
 
 	private User getUserByUsername(String username) {
 		Optional<User> optionalUser = userRepository.findByCredentialsUsername(username);
         return optionalUser.orElse(null);
     }
+
+	private void validateUser(User user) {
+		if (user.getCredentials().getUsername() == null)
+			throw new BadRequestException("username is required.");
+		if (user.getCredentials().getPassword() == null)
+			throw new BadRequestException("password is required.");
+		if (user.getProfile().getEmail() == null)
+			throw new BadRequestException("email is required.");
+	}
 
 }

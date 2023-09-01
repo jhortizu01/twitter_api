@@ -10,9 +10,11 @@ public interface TweetService {
 
     List<TweetResponseDto> getAllActiveTweets();
 
-    Tweet getTweet(Long id);
+    Tweet validateTweet(Long id);
 
     TweetResponseDto getTweetById(Long id);
 
     TweetResponseDto deleteTweetById(Long id, Credentials credentials);
+
+    void addLikeToTweet(Long id, Credentials credentials);
 }

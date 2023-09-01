@@ -30,5 +30,11 @@ public class TweetController {
         return tweetService.deleteTweetById(id, credentials);
     }
 
+    @PostMapping("/{id}/like")
+    public void addLikeToTweet(@PathVariable Long id, @RequestBody Credentials credentials) {
+        tweetService.addLikeToTweet(id, credentials);
+    }
+
+
 
 }

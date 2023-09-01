@@ -24,7 +24,7 @@ public class TweetServiceImpl implements TweetService {
     private final TweetRepository tweetRepository;
     private final UserRepository userRepository;
 
-    private User getUser(Credentials credentials) {
+    private User validateUser(Credentials credentials) {
         Optional<User> optionalUser = userRepository.findByCredentials(credentials);
         if (optionalUser.isEmpty() || optionalUser.get().isDeleted()) {
             throw new NotFoundException("Invalid credentials. Please try again.");
@@ -33,7 +33,7 @@ public class TweetServiceImpl implements TweetService {
     }
 
     @Override
-    public Tweet getTweet(Long id) {
+    public Tweet validateTweet(Long id) {
         Optional<Tweet> optionalUser = tweetRepository.findById(id);
         if (optionalUser.isEmpty() || optionalUser.get().isDeleted()) {
             throw new NotFoundException("No tweet with id: " + id);
@@ -50,17 +50,30 @@ public class TweetServiceImpl implements TweetService {
 
     @Override
     public TweetResponseDto getTweetById(Long id) {
-        return tweetMapper.tweetToDto(getTweet(id));
+        return tweetMapper.tweetToDto(validateTweet(id));
     }
 
     @Override
     public TweetResponseDto deleteTweetById(Long id, Credentials credentials) {
-        Tweet tweet = getTweet(id);
-        User user = getUser(credentials);
+        Tweet tweet = validateTweet(id);
+        User user = validateUser(credentials);
         if (user != tweet.getAuthor())
             throw new NotAuthorizedException("Tweet has not been deleted. Entered credentials do not match tweet author.");
         tweet.setDeleted(true);
         return tweetMapper.tweetToDto(tweetRepository.saveAndFlush(tweet));
+    }
+
+    @Override
+    public void addLikeToTweet(Long id, Credentials credentials) {
+        Tweet tweet = validateTweet(id);
+        User user = validateUser(credentials);
+        if (!user.getLikedTweets().contains(tweet)) {
+            user.getLikedTweets().add(tweet);
+            tweet.getLikedByUsers().add(user);
+            userRepository.saveAndFlush(user);
+        } else {
+            throw new Error("You can only like a tweet once.");
+        }
     }
 
 }

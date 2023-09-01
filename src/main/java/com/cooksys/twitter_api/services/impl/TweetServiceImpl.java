@@ -1,5 +1,6 @@
 package com.cooksys.twitter_api.services.impl;
 
+import com.cooksys.twitter_api.dtos.CredentialsDto;
 import com.cooksys.twitter_api.dtos.HashtagDto;
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
 import com.cooksys.twitter_api.dtos.UserResponseDto;
@@ -90,6 +91,23 @@ public class TweetServiceImpl implements TweetService {
     @Override
     public List<UserResponseDto> getTweetLikes(Long id) {
         return userMapper.entitiesToDtos(getTweet(id).getLikedByUsers());
+    }
+
+    @Override
+    public TweetResponseDto repostTweet(Long id, CredentialsDto credentialsDto) {
+        Tweet tweet = getTweet(id);
+        List<User> userList = userRepository.findByCredentialsUsername(credentialsDto.getUsername());
+
+        if(tweet == null | userList.isEmpty()) {
+            throw new NotFoundException("Invalid credentials or tweet id. Please try again.");
+        }
+
+        User user = userList.get(0);
+        tweet.setAuthor(user);
+        tweetRepository.saveAndFlush(tweet);
+
+        return tweetMapper.tweetToDto(tweet);
+
     }
 
 }

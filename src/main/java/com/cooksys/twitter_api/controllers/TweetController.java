@@ -1,8 +1,6 @@
 package com.cooksys.twitter_api.controllers;
 
-import com.cooksys.twitter_api.dtos.HashtagDto;
-import com.cooksys.twitter_api.dtos.TweetResponseDto;
-import com.cooksys.twitter_api.dtos.UserResponseDto;
+import com.cooksys.twitter_api.dtos.*;
 import com.cooksys.twitter_api.entities.embeddable.Credentials;
 import com.cooksys.twitter_api.services.TweetService;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +43,11 @@ public class TweetController {
     @GetMapping("/{id}/tags")
     public List<HashtagDto> getTweetByTags(@PathVariable Long id) {
         return tweetService.getTweetByTag(id);
+    }
+
+    @PostMapping("/{id}/repost")
+    public TweetResponseDto repostTweet(@PathVariable Long id, @RequestBody CredentialsDto credentialsDto) {
+        return tweetService.repostTweet(id, credentialsDto);
     }
 
 }

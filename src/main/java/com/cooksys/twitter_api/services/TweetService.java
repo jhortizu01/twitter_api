@@ -1,8 +1,6 @@
 package com.cooksys.twitter_api.services;
 
-import com.cooksys.twitter_api.dtos.HashtagDto;
-import com.cooksys.twitter_api.dtos.TweetResponseDto;
-import com.cooksys.twitter_api.dtos.UserResponseDto;
+import com.cooksys.twitter_api.dtos.*;
 import com.cooksys.twitter_api.entities.Tweet;
 import com.cooksys.twitter_api.entities.embeddable.Credentials;
 
@@ -23,4 +21,6 @@ public interface TweetService {
     List<HashtagDto> getTweetByTag(Long id);
 
     List<UserResponseDto> getTweetLikes(Long id);
+
+    TweetResponseDto repostTweet(Long id, CredentialsDto credentialsDto);
 }

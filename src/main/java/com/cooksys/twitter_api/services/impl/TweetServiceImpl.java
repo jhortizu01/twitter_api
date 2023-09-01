@@ -2,9 +2,11 @@ package com.cooksys.twitter_api.services.impl;
 
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
 import com.cooksys.twitter_api.entities.Tweet;
+import com.cooksys.twitter_api.entities.User;
 import com.cooksys.twitter_api.exceptions.NotFoundException;
 import com.cooksys.twitter_api.mappers.TweetMapper;
 import com.cooksys.twitter_api.repositories.TweetRepository;
+import com.cooksys.twitter_api.repositories.UserRepository;
 import com.cooksys.twitter_api.services.TweetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ public class TweetServiceImpl implements TweetService {
 
     private final TweetMapper tweetMapper;
     private final TweetRepository tweetRepository;
+    private final UserRepository userRepository;
 
     @Override
     public Tweet getTweet(Long id) {
@@ -39,5 +42,7 @@ public class TweetServiceImpl implements TweetService {
     public TweetResponseDto getTweetById(Long id) {
         return tweetMapper.tweetToDto(getTweet(id));
     }
+    
+    
 
 }

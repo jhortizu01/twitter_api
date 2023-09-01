@@ -12,4 +12,6 @@ public interface TweetService {
     Tweet getTweet(Long id);
 
     TweetResponseDto getTweetById(Long id);
+
+	
 }

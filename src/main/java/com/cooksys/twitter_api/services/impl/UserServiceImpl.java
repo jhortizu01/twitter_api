@@ -1,6 +1,8 @@
 package com.cooksys.twitter_api.services.impl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -9,6 +11,7 @@ import com.cooksys.twitter_api.dtos.TweetResponseDto;
 import com.cooksys.twitter_api.dtos.UserResponseDto;
 import com.cooksys.twitter_api.entities.Tweet;
 import com.cooksys.twitter_api.entities.User;
+import com.cooksys.twitter_api.exceptions.NotFoundException;
 import com.cooksys.twitter_api.mappers.TweetMapper;
 import com.cooksys.twitter_api.mappers.UserMapper;
 import com.cooksys.twitter_api.repositories.UserRepository;
@@ -33,9 +36,14 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<TweetResponseDto> getFeed(String username) {
 
-		User currentUser = userRepository.findByCredentialsUsername(username);
-		List<Tweet> userFeed = currentUser.getTweets();
-		for (User u : currentUser.getFollowing()) {
+		Optional<User> currentUser = userRepository.findByCredentialsUsername(username);
+		if(currentUser.isEmpty()) {
+			throw new NotFoundException("User does not exist");
+		}
+		
+		User user = currentUser.get();
+		List<Tweet> userFeed = new ArrayList<>(user.getTweets());
+		for (User u : user.getFollowing()) {
 			userFeed.addAll(u.getTweets());
 		}
 		return tweetMapper.entitiesToDtos(userFeed);
@@ -43,32 +51,45 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean validateUsername() {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean validateUsername(String username) {
+		
+		Optional<User> userToFind = userRepository.findByCredentialsUsername(username);
+		
+		if(userToFind.isEmpty()) {
+			return true;
+		}else {
+			return false;
+		}
+		
+		
+		
+		
 	}
 
 	@Override
 	public void unfollow(CredentialsDto username) {
 
+		
+		
 	}
 	
 	@Override
 	public void follow(CredentialsDto username) {
 
+		
+		
 	}
 	
-	@Override
-	public boolean usernameExists(String username) {
-		return false;
-
-	}
 
 	@Override
-	public List<UserResponseDto> getMentions(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<TweetResponseDto> getMentions(Long id) {
+		User currentUser = userRepository.findById(id).get();
+		
+		List<Tweet> mentions = currentUser.getMentionedTweets();
+		
+		return tweetMapper.entitiesToDtos(mentions);
 	}
+
 
 
 

@@ -28,20 +28,14 @@ public class UserController {
 	
 	@GetMapping("validate/username/available/@{username}")
 	public boolean validateUsername(@PathVariable String username) {
-		return userService.validateUsername();
-		
-	}
-	
-	@GetMapping("validate/username/exists/@{username}")
-	public boolean usernameExists(@PathVariable String username) {
-		return userService.usernameExists(username);
+		return userService.validateUsername(username);
 		
 	}
 		
 	
 	@PostMapping("users/@{username}/unfollow")
 	public void unfollow(@PathVariable String user) {
-	 return;
+	 return ;
 	}
 	
 	
@@ -50,11 +44,6 @@ public class UserController {
 		
 	}
 	
-	@GetMapping("{id}/mentions")
-	public List<UserResponseDto> getMentions(Long id){
-		return userService.getMentions(id);
-		
-	}
 	
 	@GetMapping("users/@{username}/feed")
 	public List<TweetResponseDto> getFeed(String username) {
@@ -62,5 +51,10 @@ public class UserController {
 
 	}
 	
+	@GetMapping("{id}/mentions")
+	public List<TweetResponseDto> getMentions(Long id){
+		
+		return userService.getMentions(id);
+	}
 
 }

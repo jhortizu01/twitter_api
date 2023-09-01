@@ -10,16 +10,14 @@ public interface UserService {
 
 	List<UserResponseDto> getAllActiveUsers();
 
-	boolean validateUsername();
+	boolean validateUsername(String username);
 	
 	void unfollow(CredentialsDto username);
 
 	void follow(CredentialsDto username);
 
-	List<UserResponseDto> getMentions(Long id);
-
-	boolean usernameExists(String username);
-
 	List<TweetResponseDto> getFeed(String username);
+	
+	List<TweetResponseDto> getMentions(Long id);
 
 }

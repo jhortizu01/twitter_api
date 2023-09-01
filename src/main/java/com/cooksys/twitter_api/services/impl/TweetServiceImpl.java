@@ -37,11 +37,11 @@ public class TweetServiceImpl implements TweetService {
 
     @Override
     public Tweet getTweet(Long id) {
-        Optional<Tweet> optionalUser = tweetRepository.findById(id);
-        if (optionalUser.isEmpty() || optionalUser.get().isDeleted()) {
+        Optional<Tweet> optionalTweet = tweetRepository.findById(id);
+        if (optionalTweet.isEmpty() || optionalTweet.get().isDeleted()) {
             throw new NotFoundException("No tweet with id: " + id);
         }
-        return optionalUser.get();
+        return optionalTweet.get();
     }
 
     @Override

@@ -9,6 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
+import com.cooksys.twitter_api.entities.embeddable.Credentials;
+import com.cooksys.twitter_api.services.TweetService;
+import lombok.RequiredArgsConstructor;
+
+
+import com.cooksys.twitter_api.dtos.TweetResponseDto;
 import com.cooksys.twitter_api.dtos.UserResponseDto;
 import com.cooksys.twitter_api.services.TweetService;
 
@@ -31,10 +37,17 @@ public class TweetController {
 		return tweetService.getTweetById(id);
 	}
 
+    @DeleteMapping("/{id}")
+    public TweetResponseDto deleteTweetById(@PathVariable Long id, @RequestBody Credentials credentials) {
+        return tweetService.deleteTweetById(id, credentials);
+    }
+
+    @PostMapping("/{id}/like")
+    public void addLikeToTweet(@PathVariable Long id, @RequestBody Credentials credentials) {
+        tweetService.addLikeToTweet(id, credentials);
+    }
+
     @GetMapping("/{id}/tags")
     public List<HashtagDto> getTweetByTags(@PathVariable Long id) {
         return tweetService.getTweetByTag(id);
     }
-
-
-}

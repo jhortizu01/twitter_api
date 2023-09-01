@@ -19,5 +19,4 @@ public interface UserService {
 	List<TweetResponseDto> getFeed(String username);
 	
 	List<TweetResponseDto> getMentions(Long id);
-
 }

@@ -1,5 +1,6 @@
 package com.cooksys.twitter_api.services;
 
+import com.cooksys.twitter_api.dtos.HashtagDto;
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
 import com.cooksys.twitter_api.entities.Tweet;
 
@@ -13,5 +14,5 @@ public interface TweetService {
 
     TweetResponseDto getTweetById(Long id);
 
-	
+    List<HashtagDto> getTweetByTag(Long id);
 }

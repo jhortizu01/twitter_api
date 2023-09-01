@@ -56,5 +56,4 @@ public class UserController {
 		
 		return userService.getMentions(id);
 	}
-
 }

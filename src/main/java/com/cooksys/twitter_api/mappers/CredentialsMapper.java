@@ -9,4 +9,6 @@ import com.cooksys.twitter_api.entities.embeddable.Credentials;
 public interface CredentialsMapper {
 
     CredentialsDto entityToDto(Credentials credentials);
+    
+    CredentialsDto dtoToEntity(CredentialsDto credentials);
 }

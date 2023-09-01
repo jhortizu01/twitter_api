@@ -85,11 +85,17 @@ public class TweetServiceImpl implements TweetService {
 
     @Override
     public List<HashtagDto> getTweetByTag(Long id) {
+        if(getTweet(id) == null) {
+            throw new Error("Tweet does not exist, try again");
+        }
         return hashtagMapper.entitiesToDtos(getTweet(id).getHashtags());
     }
 
     @Override
     public List<UserResponseDto> getTweetLikes(Long id) {
+        if(getTweet(id) == null) {
+            throw new Error("Tweet does not exist, try again");
+        }
         return userMapper.entitiesToDtos(getTweet(id).getLikedByUsers());
     }
 

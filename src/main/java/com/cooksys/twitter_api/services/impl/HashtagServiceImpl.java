@@ -20,4 +20,5 @@ public class HashtagServiceImpl implements HashtagService {
     public List<HashtagDto> getAllHashTags() {
         return hashtagMapper.entitiesToDtos(hashtagRepository.findAll());
     }
+
 }

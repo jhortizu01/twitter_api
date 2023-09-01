@@ -6,7 +6,6 @@ import com.cooksys.twitter_api.dtos.UserRequestDto;
 import com.cooksys.twitter_api.dtos.UserResponseDto;
 import com.cooksys.twitter_api.entities.Tweet;
 import com.cooksys.twitter_api.entities.User;
-import com.cooksys.twitter_api.entities.embeddable.Credentials;
 import com.cooksys.twitter_api.exceptions.NotFoundException;
 import com.cooksys.twitter_api.mappers.TweetMapper;
 import com.cooksys.twitter_api.mappers.UserMapper;
@@ -89,7 +88,10 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserResponseDto createUser(UserRequestDto userRequestDto) {
-		// User user = getUser(userRequestDto.getCredentials().getUsername())
+		User user = getUserByUsername(userRequestDto.getCredentials().getUsername());
+		// if (user == null) {
+		// 	user = userMapper.
+		// }
 		return null;
 	}
 

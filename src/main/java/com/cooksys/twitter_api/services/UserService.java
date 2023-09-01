@@ -1,5 +1,7 @@
 package com.cooksys.twitter_api.services;
 
-public interface UserService {
+import com.cooksys.twitter_api.dtos.UserResponseDto;
 
+public interface UserService {
+    UserResponseDto getSpecificUser(String username);
 }

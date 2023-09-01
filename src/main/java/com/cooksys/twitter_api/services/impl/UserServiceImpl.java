@@ -1,5 +1,6 @@
 package com.cooksys.twitter_api.services.impl;
 
+import com.cooksys.twitter_api.dtos.UserResponseDto;
 import com.cooksys.twitter_api.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

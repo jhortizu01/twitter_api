@@ -1,5 +1,6 @@
 package com.cooksys.twitter_api.controllers;
 
+import com.cooksys.twitter_api.dtos.HashtagDto;
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
 import com.cooksys.twitter_api.entities.embeddable.Credentials;
 import com.cooksys.twitter_api.services.TweetService;
@@ -35,6 +36,9 @@ public class TweetController {
         tweetService.addLikeToTweet(id, credentials);
     }
 
-
+    @GetMapping("/{id}/tags")
+    public List<HashtagDto> getTweetByTags(@PathVariable Long id) {
+        return tweetService.getTweetByTag(id);
+    }
 
 }

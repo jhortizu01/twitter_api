@@ -1,5 +1,6 @@
 package com.cooksys.twitter_api.controllers;
 
+import com.cooksys.twitter_api.dtos.HashtagDto;
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
 import com.cooksys.twitter_api.services.TweetService;
 import lombok.RequiredArgsConstructor;
@@ -26,5 +27,11 @@ public class TweetController {
     public TweetResponseDto getTweetById(@PathVariable Long id) {
         return tweetService.getTweetById(id);
     }
+
+    @GetMapping("/{id}/tags")
+    public List<HashtagDto> getTweetByTags(@PathVariable Long id) {
+        return tweetService.getTweetByTag(id);
+    }
+
 
 }

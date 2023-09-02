@@ -2,9 +2,10 @@ package com.cooksys.twitter_api.services;
 
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
 import com.cooksys.twitter_api.dtos.UserRequestDto;
-import com.cooksys.twitter_api.dtos.UserResponseDto;
 
 import java.util.List;
+import com.cooksys.twitter_api.dtos.CredentialsDto;
+import com.cooksys.twitter_api.dtos.UserResponseDto;
 
 public interface UserService {
     UserResponseDto getSpecificUser(String username);
@@ -12,4 +13,14 @@ public interface UserService {
     List<TweetResponseDto> getUserTweets(String username);
 
     UserResponseDto updateUser(String username, UserRequestDto userRequestDto);
+  
+	List<UserResponseDto> getAllActiveUsers();
+  
+	void unfollow(CredentialsDto username);
+
+	void follow(CredentialsDto username);
+
+	List<TweetResponseDto> getFeed(String username);
+	
+	List<TweetResponseDto> getMentions(Long id);
 }

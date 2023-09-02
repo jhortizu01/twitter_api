@@ -102,8 +102,8 @@ public class Seeder implements CommandLineRunner {
         user4Pro.setEmail("nathan@email.com");
         user4Pro.setPhone("456-789-0023");
         user4.setProfile(user4Pro);
-        // Deleted
-        user4.setDeleted(false);
+       // Deleted
+      user4.setDeleted(false);
 
         // --- User 5 ---
         // Credentials
@@ -160,7 +160,7 @@ public class Seeder implements CommandLineRunner {
 
         hashtagRepository.saveAllAndFlush(Arrays.asList(hashtag1, hashtag2, hashtag3, hashtag4));
 
-//	    // ----- TWEETS -----
+	    // ----- TWEETS -----
         // --- Start Tweet 1 ---
         Tweet tweet1 = new Tweet();
         tweet1.setAuthor(user1);
@@ -202,7 +202,7 @@ public class Seeder implements CommandLineRunner {
         Tweet tweet5 = new Tweet();
         tweet5.setAuthor(user3);
         tweet5.setDeleted(false);
-        // Set Content @PARAM String
+       // Set Content @PARAM String
         tweet5.setContent("This is some content 5 tweet5");
         tweet5.setMentionedUsers(Arrays.asList(user1, user2));
         tweet5.setInReplyTo(tweet4);
@@ -278,6 +278,6 @@ public class Seeder implements CommandLineRunner {
         List<User> followers_1 = List.of(user5, deletedUser);
         user1.setFollowers(followers_1);
         userRepository.saveAndFlush(user1);
-    }
+  }
 
 }

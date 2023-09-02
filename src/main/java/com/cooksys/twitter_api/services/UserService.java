@@ -9,12 +9,10 @@ import com.cooksys.twitter_api.dtos.UserResponseDto;
 public interface UserService {
 
 	List<UserResponseDto> getAllActiveUsers();
-
-	boolean validateUsername(String username);
 	
-	void unfollow(CredentialsDto username);
+	void unfollow(CredentialsDto credentials, String username);
 
-	void follow(CredentialsDto username);
+	void follow(CredentialsDto credentials, String username);
 
 	List<TweetResponseDto> getFeed(String username);
 	

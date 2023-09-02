@@ -1,6 +1,5 @@
 package com.cooksys.twitter_api.services.impl;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +11,9 @@ import com.cooksys.twitter_api.dtos.TweetResponseDto;
 import com.cooksys.twitter_api.dtos.UserResponseDto;
 import com.cooksys.twitter_api.entities.Tweet;
 import com.cooksys.twitter_api.entities.User;
+import com.cooksys.twitter_api.entities.embeddable.Credentials;
 import com.cooksys.twitter_api.exceptions.NotFoundException;
+import com.cooksys.twitter_api.mappers.CredentialsMapper;
 import com.cooksys.twitter_api.mappers.TweetMapper;
 import com.cooksys.twitter_api.mappers.UserMapper;
 import com.cooksys.twitter_api.repositories.UserRepository;
@@ -27,10 +28,17 @@ public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final UserMapper userMapper;
 	private final TweetMapper tweetMapper;
+	private final CredentialsMapper credentialsMapper;
 
 	@Override
 	public List<UserResponseDto> getAllActiveUsers() {
-		var result = userRepository.findAll().stream().filter(user -> !user.isDeleted()).toList();
+		List<User> result = userRepository.findByDeletedIsFalse();
+		//findAll().stream().filter(user -> !user.isDeleted()).toList();
+		if(result.isEmpty()) {
+			List<User> emptyList = new ArrayList<>();
+			return userMapper.entitiesToDtos(emptyList);
+		}
+		
 		return userMapper.entitiesToDtos(result);
 	}
 
@@ -38,10 +46,10 @@ public class UserServiceImpl implements UserService {
 	public List<TweetResponseDto> getFeed(String username) {
 
 		Optional<User> currentUser = userRepository.findByCredentialsUsername(username);
-		if(currentUser.isEmpty()) {
+		if (currentUser.isEmpty()) {
 			throw new NotFoundException("User does not exist");
 		}
-		
+
 		User user = currentUser.get();
 		List<Tweet> userFeed = new ArrayList<>(user.getTweets());
 		for (User u : user.getFollowing()) {
@@ -52,46 +60,41 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean validateUsername(String username) {
-		
-		Optional<User> userToFind = userRepository.findByCredentialsUsername(username);
-		
-		if(userToFind.isEmpty()) {
-			return true;
-		}else {
-			return false;
-		}
-		
-		
-		
-		
+	public void unfollow(CredentialsDto credentials, String username) {
+
+		Credentials creds = credentialsMapper.dtoToEntity(credentials);
+
+		User currentUser = userRepository.findByCredentials(creds).get();
+
+		User userToUnfollow = userRepository.findByCredentialsUsername(username).get();
+
+		currentUser.getFollowing().remove(userToUnfollow);
+
+		userRepository.saveAndFlush(currentUser);
+
 	}
 
 	@Override
-	public void unfollow(CredentialsDto username) {
+	public void follow(CredentialsDto credentials, String username) {
+		Credentials creds = credentialsMapper.dtoToEntity(credentials);
 
-		
-		
-	}
-	
-	@Override
-	public void follow(CredentialsDto username) {
+		User currentUser = userRepository.findByCredentials(creds).get();
 
-		
-		
+		User userToFollow = userRepository.findByCredentialsUsername(username).get();
+
+		currentUser.getFollowing().add(userToFollow);
+
+		userRepository.saveAndFlush(currentUser);
+
 	}
-	
 
 	@Override
 	public List<TweetResponseDto> getMentions(Long id) {
 		User currentUser = userRepository.findById(id).get();
-		
+
 		List<Tweet> mentions = currentUser.getMentionedTweets();
-		
+
 		return tweetMapper.entitiesToDtos(mentions);
 	}
-
-
-
 
 }

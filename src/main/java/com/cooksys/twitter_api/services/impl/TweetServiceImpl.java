@@ -1,24 +1,28 @@
 package com.cooksys.twitter_api.services.impl;
 
 import com.cooksys.twitter_api.dtos.HashtagDto;
+import com.cooksys.twitter_api.dtos.TweetRequestDto;
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
+import com.cooksys.twitter_api.entities.Hashtag;
 import com.cooksys.twitter_api.entities.Tweet;
 import com.cooksys.twitter_api.entities.User;
-
 import com.cooksys.twitter_api.entities.embeddable.Credentials;
 import com.cooksys.twitter_api.exceptions.NotAuthorizedException;
-
 import com.cooksys.twitter_api.exceptions.NotFoundException;
 import com.cooksys.twitter_api.mappers.HashtagMapper;
 import com.cooksys.twitter_api.mappers.TweetMapper;
+import com.cooksys.twitter_api.repositories.HashtagRepository;
 import com.cooksys.twitter_api.repositories.TweetRepository;
 import com.cooksys.twitter_api.repositories.UserRepository;
 import com.cooksys.twitter_api.services.TweetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +31,7 @@ public class TweetServiceImpl implements TweetService {
     private final TweetMapper tweetMapper;
     private final TweetRepository tweetRepository;
     private final UserRepository userRepository;
+    private final HashtagRepository hashtagRepository;
 
     private final HashtagMapper hashtagMapper;
 
@@ -36,6 +41,11 @@ public class TweetServiceImpl implements TweetService {
             throw new NotFoundException("Invalid credentials. Please try again.");
         }
         return optionalUser.get();
+    }
+
+    private User getUserByUsername(String username) {
+        Optional<User> optionalUser = userRepository.findByCredentialsUsername(username);
+        return optionalUser.orElse(null);
     }
 
     @Override
@@ -58,8 +68,7 @@ public class TweetServiceImpl implements TweetService {
     public TweetResponseDto getTweetById(Long id) {
         return tweetMapper.tweetToDto(getTweet(id));
     }
-    
-    
+
 
     @Override
     public TweetResponseDto deleteTweetById(Long id, Credentials credentials) {
@@ -87,6 +96,72 @@ public class TweetServiceImpl implements TweetService {
     @Override
     public List<HashtagDto> getTweetByTag(Long id) {
         return hashtagMapper.entitiesToDtos(getTweet(id).getHashtags());
+    }
+
+    // TODO: Add code to sort response in reverse chronological order
+    @Override
+    public List<TweetResponseDto> getUsernameMentions(String username) {
+        User user = getUserByUsername(username);
+        if (user == null || user.isDeleted())
+            throw new NotFoundException("Invalid. Please try again.");
+
+        List<Tweet> mentions = user.getMentionedTweets().stream().filter(tweet -> !tweet.isDeleted()).toList();
+        return tweetMapper.entitiesToDtos(mentions);
+    }
+
+    @Override
+    public TweetResponseDto createTweet(TweetRequestDto tweetRequestDto) {
+        User user = getUser(tweetRequestDto.getCredentials());
+        Tweet tweet = new Tweet();
+        tweet.setAuthor(user);
+        tweet.setContent(tweetRequestDto.getContent());
+        parseForUserMentions(tweet);
+        parseForHashtags(tweet);
+        return tweetMapper.tweetToDto(tweetRepository.saveAndFlush(tweet));
+    }
+
+    public void parseForHashtags(Tweet tweet) {
+        Pattern pattern = Pattern.compile("@\\w+", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(tweet.getContent());
+
+        List<Hashtag> hashtags = new ArrayList<>();
+
+        matcher.results().forEach(matchResult -> {
+            String hashtag = matchResult.group().substring(1);
+            hashtagRepository.findAll()
+                    .stream()
+                    .filter(hashtag1 -> hashtag1.getLabel().equals(hashtag))
+                    .forEach(hashtag1 -> {
+                        hashtags.add(hashtag1);
+                        hashtag1.getTweets().add(tweet);
+                    });
+        });
+
+        tweet.getHashtags().addAll(hashtags);
+        tweetRepository.saveAndFlush(tweet);
+        hashtagRepository.saveAllAndFlush(hashtags);
+    }
+
+    public void parseForUserMentions(Tweet tweet) {
+        Pattern pattern = Pattern.compile("@\\w+", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(tweet.getContent());
+
+        List<User> mentionedUsers = new ArrayList<>();
+
+        matcher.results().forEach(matchResult -> {
+            String username = matchResult.group().substring(1);
+            userRepository.findAll()
+                    .stream()
+                    .filter(user -> user.getCredentials().getUsername().equals(username))
+                    .forEach(user -> {
+                        mentionedUsers.add(user);
+                        user.getMentionedTweets().add(tweet);
+                    });
+        });
+
+        tweet.getMentionedUsers().addAll(mentionedUsers);
+        tweetRepository.saveAndFlush(tweet);
+        userRepository.saveAllAndFlush(mentionedUsers);
     }
 
 }

@@ -5,6 +5,9 @@ import com.cooksys.twitter_api.dtos.UserRequestDto;
 import com.cooksys.twitter_api.dtos.UserResponseDto;
 import com.cooksys.twitter_api.entities.User;
 import com.cooksys.twitter_api.entities.embeddable.Credentials;
+import com.cooksys.twitter_api.dtos.UserRequestDto;
+import com.cooksys.twitter_api.dtos.UserResponseDto;
+import com.cooksys.twitter_api.entities.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -19,6 +22,8 @@ public interface UserMapper {
 	UserRequestDto userEntitytoDto(User user);
 
 	User userRequestDtoToEntity(UserRequestDto userRequestDto);
+
+	UserResponseDto createUser(UserRequestDto userRequestDto);
 
 	List<UserResponseDto> entitiesToDtos(List<User> entities);
 

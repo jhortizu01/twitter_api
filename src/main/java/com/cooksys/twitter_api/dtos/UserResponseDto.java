@@ -9,9 +9,9 @@ import java.sql.Timestamp;
 @Data
 public class UserResponseDto {
 
-	private String username;
+    private String username;
 
-	private ProfileDto profile;
+    private ProfileDto profile;
 
-	private Timestamp joined;
+    private Timestamp joined;
 }

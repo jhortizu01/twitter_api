@@ -7,10 +7,10 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface HashtagRepository  extends JpaRepository<Hashtag, Long> {
+public interface HashtagRepository extends JpaRepository<Hashtag, Long> {
 
     // TODO: Do you need any derived queries? If so add them here.
 
-    Optional<Hashtag> findByLabel (String label);
+    Optional<Hashtag> findByLabel(String label);
 
 }

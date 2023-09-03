@@ -8,9 +8,9 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface HashtagMapper {
-	
-	HashtagDto entityToDto(Hashtag entity);
 
-	List<HashtagDto> entitiesToDtos(List<Hashtag> entities);
+    HashtagDto entityToDto(Hashtag entity);
+
+    List<HashtagDto> entitiesToDtos(List<Hashtag> entities);
 
 }

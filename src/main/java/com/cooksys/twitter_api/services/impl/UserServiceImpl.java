@@ -1,13 +1,5 @@
 package com.cooksys.twitter_api.services.impl;
 
-import com.cooksys.twitter_api.dtos.UserRequestDto;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-
 import com.cooksys.twitter_api.dtos.CredentialsDto;
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
 import com.cooksys.twitter_api.dtos.UserRequestDto;
@@ -22,10 +14,12 @@ import com.cooksys.twitter_api.mappers.TweetMapper;
 import com.cooksys.twitter_api.mappers.UserMapper;
 import com.cooksys.twitter_api.repositories.UserRepository;
 import com.cooksys.twitter_api.services.UserService;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,111 +28,111 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final TweetMapper tweetMapper;
-  	private final UserRepository userRepository;
-	private final CredentialsMapper credentialsMapper;
+    private final UserRepository userRepository;
+    private final CredentialsMapper credentialsMapper;
 
     @Override
     public UserResponseDto getSpecificUser(String username) {
-        List<User> user = userRepository.findByCredentialsUsername(username);
-        if(user.isEmpty()) {
+        Optional<User> user = userRepository.findByCredentialsUsername(username);
+        if (user.isEmpty()) {
             throw new NotFoundException("No user with username: " + username);
         }
 
-        return userMapper.entityToDto(user.get(0));
+        return userMapper.entityToDto(user.get());
     }
 
     @Override
     public List<TweetResponseDto> getUserTweets(String username) {
-        List<User> user = userRepository.findByCredentialsUsername(username);
-        if(user.isEmpty()) {
+        Optional<User> user = userRepository.findByCredentialsUsername(username);
+        if (user.isEmpty()) {
             throw new NotFoundException("No user with username: " + username);
         }
 
-        return tweetMapper.entitiesToDtos(user.get(0).getTweets());
+        return tweetMapper.entitiesToDtos(user.get().getTweets());
     }
 
     @Override
     public UserResponseDto updateUser(String username, UserRequestDto userRequestDto) {
 
-        List<User> user = userRepository.findByCredentialsUsername(username);
+        Optional<User> user = userRepository.findByCredentialsUsername(username);
 
-        if(user.isEmpty()) {
+        if (user.isEmpty()) {
             throw new NotFoundException("No user with username: " + username);
         }
 
         User userEntity = userMapper.userRequestDtoToEntity(userRequestDto);
 
-        user.get(0).setCredentials(userEntity.getCredentials());
-        user.get(0).setProfile(userEntity.getProfile());
-        return userMapper.entityToDto(userRepository.saveAndFlush(user.get(0)));
+        user.get().setCredentials(userEntity.getCredentials());
+        user.get().setProfile(userEntity.getProfile());
+        return userMapper.entityToDto(userRepository.saveAndFlush(user.get()));
     }
 
-	@Override
-	public List<UserResponseDto> getAllActiveUsers() {
-		List<User> result = userRepository.findByDeletedIsFalse();
-		//findAll().stream().filter(user -> !user.isDeleted()).toList();
-		if(result.isEmpty()) {
-			List<User> emptyList = new ArrayList<>();
-			return userMapper.entitiesToDtos(emptyList);
-		}
-		
-		return userMapper.entitiesToDtos(result);
-	}
+    @Override
+    public List<UserResponseDto> getAllActiveUsers() {
+        List<User> result = userRepository.findByDeletedIsFalse();
+        if (result.isEmpty()) {
+            List<User> emptyList = new ArrayList<>();
+            return userMapper.entitiesToDtos(emptyList);
+        }
+
+        return userMapper.entitiesToDtos(result);
+    }
 
     @Override
     public List<TweetResponseDto> getFeed(String username) {
 
-		Optional<User> currentUser = userRepository.findByCredentialsUsername(username);
-		if (currentUser.isEmpty()) {
-			throw new NotFoundException("User does not exist");
-		}
+        Optional<User> currentUser = userRepository.findByCredentialsUsername(username);
+        if (currentUser.isEmpty()) {
+            throw new NotFoundException("User does not exist");
+        }
 
-		User user = currentUser.get();
-		List<Tweet> userFeed = new ArrayList<>(user.getTweets());
-		for (User u : user.getFollowing()) {
-			userFeed.addAll(u.getTweets());
-		}
-		return tweetMapper.entitiesToDtos(userFeed);
+        User user = currentUser.get();
+        List<Tweet> userFeed = new ArrayList<>(user.getTweets());
+        for (User u : user.getFollowing()) {
+            userFeed.addAll(u.getTweets());
+        }
+        return tweetMapper.entitiesToDtos(userFeed);
     }
-	@Override
-	public void unfollow(CredentialsDto credentials, String username) {
 
-	}
-  
-		Credentials creds = credentialsMapper.dtoToEntity(credentials);
+    @Override
+    public void unfollow(CredentialsDto credentials, String username) {
 
-		User currentUser = userRepository.findByCredentials(creds).get();
+        Credentials creds = credentialsMapper.dtoToEntity(credentials);
 
-		User userToUnfollow = userRepository.findByCredentialsUsername(username).get();
+        User currentUser = userRepository.findByCredentials(creds).get();
 
-		currentUser.getFollowing().remove(userToUnfollow);
+        User userToUnfollow = userRepository.findByCredentialsUsername(username).get();
 
-		userRepository.saveAndFlush(currentUser);
+        currentUser.getFollowing().
 
-	}
+                remove(userToUnfollow);
 
-	@Override
-	public void follow(CredentialsDto credentials, String username) {
-		Credentials creds = credentialsMapper.dtoToEntity(credentials);
+        userRepository.saveAndFlush(currentUser);
 
-		User currentUser = userRepository.findByCredentials(creds).get();
+    }
 
-		User userToFollow = userRepository.findByCredentialsUsername(username).get();
+    @Override
+    public void follow(CredentialsDto credentials, String username) {
+        Credentials creds = credentialsMapper.dtoToEntity(credentials);
 
-		currentUser.getFollowing().add(userToFollow);
+        User currentUser = userRepository.findByCredentials(creds).get();
 
-		userRepository.saveAndFlush(currentUser);
+        User userToFollow = userRepository.findByCredentialsUsername(username).get();
 
-	}
+        currentUser.getFollowing().add(userToFollow);
 
-	@Override
-	public List<TweetResponseDto> getMentions(Long id) {
-		User currentUser = userRepository.findById(id).get();
+        userRepository.saveAndFlush(currentUser);
 
-		List<Tweet> mentions = currentUser.getMentionedTweets();
+    }
 
-		return tweetMapper.entitiesToDtos(mentions);
-	}
+    @Override
+    public List<TweetResponseDto> getMentions(Long id) {
+        User currentUser = userRepository.findById(id).get();
+
+        List<Tweet> mentions = currentUser.getMentionedTweets();
+
+        return tweetMapper.entitiesToDtos(mentions);
+    }
 
     @Override
     public UserResponseDto createUser(UserRequestDto userRequestDto) {

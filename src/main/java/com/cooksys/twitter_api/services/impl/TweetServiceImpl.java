@@ -1,10 +1,6 @@
 package com.cooksys.twitter_api.services.impl;
 
-import com.cooksys.twitter_api.dtos.CredentialsDto;
-import com.cooksys.twitter_api.dtos.HashtagDto;
-import com.cooksys.twitter_api.dtos.TweetRequestDto;
-import com.cooksys.twitter_api.dtos.TweetResponseDto;
-import com.cooksys.twitter_api.dtos.UserResponseDto;
+import com.cooksys.twitter_api.dtos.*;
 import com.cooksys.twitter_api.entities.Hashtag;
 import com.cooksys.twitter_api.entities.Tweet;
 import com.cooksys.twitter_api.entities.User;
@@ -98,9 +94,8 @@ public class TweetServiceImpl implements TweetService {
     }
 
     @Override
-
-  public List<HashtagDto> getTweetByTag(Long id) {
-        if(getTweet(id) == null) {
+    public List<HashtagDto> getTweetByTags(Long id) {
+        if (getTweet(id) == null) {
             throw new Error("Tweet does not exist, try again");
         }
         return hashtagMapper.entitiesToDtos(getTweet(id).getHashtags());
@@ -108,7 +103,7 @@ public class TweetServiceImpl implements TweetService {
 
     @Override
     public List<UserResponseDto> getTweetLikes(Long id) {
-        if(getTweet(id) == null) {
+        if (getTweet(id) == null) {
             throw new Error("Tweet does not exist, try again");
         }
         return userMapper.entitiesToDtos(getTweet(id).getLikedByUsers());
@@ -117,20 +112,17 @@ public class TweetServiceImpl implements TweetService {
     @Override
     public TweetResponseDto repostTweet(Long id, CredentialsDto credentialsDto) {
         Tweet tweet = getTweet(id);
-        List<User> userList = userRepository.findByCredentialsUsername(credentialsDto.getUsername());
+        Optional<User> userList = userRepository.findByCredentialsUsername(credentialsDto.getUsername());
 
-        if(tweet == null | userList.isEmpty()) {
+        if (tweet == null | userList.isEmpty()) {
             throw new NotFoundException("Invalid credentials or tweet id. Please try again.");
         }
 
-        User user = userList.get(0);
+        User user = userList.get();
         tweet.setAuthor(user);
         tweetRepository.saveAndFlush(tweet);
 
         return tweetMapper.tweetToDto(tweet);
-
-    public List<HashtagDto> getTweetByTags(Long id) {
-        return hashtagMapper.entitiesToDtos(getTweet(id).getHashtags());
     }
 
     // TODO: Add code to sort response in reverse chronological order

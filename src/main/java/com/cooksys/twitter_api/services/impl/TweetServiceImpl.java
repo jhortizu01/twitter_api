@@ -94,7 +94,7 @@ public class TweetServiceImpl implements TweetService {
     }
 
     @Override
-    public List<HashtagDto> getTweetByTag(Long id) {
+    public List<HashtagDto> getTweetByTags(Long id) {
         return hashtagMapper.entitiesToDtos(getTweet(id).getHashtags());
     }
 

@@ -20,7 +20,7 @@ public interface TweetService {
 
     void addLikeToTweet(Long id, Credentials credentials);
 
-    List<HashtagDto> getTweetByTag(Long id);
+    List<HashtagDto> getTweetByTags(Long id);
 
     List<TweetResponseDto> getUsernameMentions(String username);
 

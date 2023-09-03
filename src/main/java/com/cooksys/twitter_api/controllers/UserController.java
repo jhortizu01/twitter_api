@@ -1,5 +1,6 @@
 package com.cooksys.twitter_api.controllers;
 
+
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,18 +11,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cooksys.twitter_api.dtos.CredentialsDto;
-import com.cooksys.twitter_api.dtos.TweetResponseDto;
-import com.cooksys.twitter_api.dtos.UserResponseDto;
-import com.cooksys.twitter_api.services.UserService;
 
+
+import com.cooksys.twitter_api.dtos.TweetResponseDto;
+import com.cooksys.twitter_api.dtos.UserRequestDto;
+import com.cooksys.twitter_api.dtos.UserResponseDto;
+import com.cooksys.twitter_api.services.TweetService;
+import com.cooksys.twitter_api.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
 
-	private final UserService userService;
+    private final UserService userService;
+    private final TweetService tweetService;
+
 
 	@GetMapping
 	public List<UserResponseDto> getAllActiveUsers() {
@@ -51,4 +61,16 @@ public class UserController {
 		
 		return userService.getMentions(id);
 	}
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserResponseDto createUser(@RequestBody UserRequestDto userRequestDto) {
+        return userService.createUser(userRequestDto);
+    }
+
+    @GetMapping("/@{username}/mentions")
+    public List<TweetResponseDto> getUsernameMentions(@PathVariable String username) {
+        return tweetService.getUsernameMentions(username);
+    }
+
 }

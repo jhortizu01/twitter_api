@@ -17,22 +17,28 @@ import com.cooksys.twitter_api.services.TweetService;
 
 import lombok.RequiredArgsConstructor;
 
+import com.cooksys.twitter_api.dtos.TweetRequestDto;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/tweets")
 public class TweetController {
 
-	private final TweetService tweetService;
+    private final TweetService tweetService;
 
-	@GetMapping
-	public List<TweetResponseDto> getAllActiveTweets() {
-		return tweetService.getAllActiveTweets();
-	}
+    @GetMapping
+    public List<TweetResponseDto> getAllActiveTweets() {
+        return tweetService.getAllActiveTweets();
+    }
 
-	@GetMapping("/{id}")
-	public TweetResponseDto getTweetById(@PathVariable Long id) {
-		return tweetService.getTweetById(id);
-	}
+    @GetMapping("/{id}")
+    public TweetResponseDto getTweetById(@PathVariable Long id) {
+        return tweetService.getTweetById(id);
+    }
 
     @DeleteMapping("/{id}")
     public TweetResponseDto deleteTweetById(@PathVariable Long id, @RequestBody Credentials credentials) {
@@ -48,6 +54,11 @@ public class TweetController {
     public List<HashtagDto> getTweetByTags(@PathVariable Long id) {
     	return tweetService.getTweetByTags(id);
     }
-    
-    
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public TweetResponseDto createTweet(@RequestBody TweetRequestDto tweetRequestDto) {
+        return tweetService.createTweet(tweetRequestDto);
+    }
+
 }

@@ -1,10 +1,11 @@
 package com.cooksys.twitter_api.services;
 
-import java.util.List;
-
 import com.cooksys.twitter_api.dtos.CredentialsDto;
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
+import com.cooksys.twitter_api.dtos.UserRequestDto;
 import com.cooksys.twitter_api.dtos.UserResponseDto;
+
+import java.util.List;
 
 public interface UserService {
 
@@ -17,4 +18,7 @@ public interface UserService {
 	List<TweetResponseDto> getFeed(String username);
 	
 	List<TweetResponseDto> getMentions(Long id);
+
+	UserResponseDto createUser(UserRequestDto userRequestDto);
+
 }

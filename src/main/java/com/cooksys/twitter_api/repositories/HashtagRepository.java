@@ -11,6 +11,6 @@ public interface HashtagRepository  extends JpaRepository<Hashtag, Long> {
 
     // TODO: Do you need any derived queries? If so add them here.
 
-    Optional<Hashtag> findById(Long id);
+    Optional<Hashtag> findByLabel (String label);
 
 }

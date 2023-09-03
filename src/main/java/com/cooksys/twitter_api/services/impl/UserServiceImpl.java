@@ -28,7 +28,6 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final TweetMapper tweetMapper;
-    private final UserRepository userRepository;
     private final CredentialsMapper credentialsMapper;
 
     @Override

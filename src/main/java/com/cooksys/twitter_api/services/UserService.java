@@ -14,8 +14,6 @@ public interface UserService {
 
     UserResponseDto updateUser(String username, UserRequestDto userRequestDto);
 
-    void unfollow(CredentialsDto username);
-
     List<UserResponseDto> getAllActiveUsers();
 
     void unfollow(CredentialsDto credentials, String username);

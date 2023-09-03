@@ -1,5 +1,8 @@
 package com.cooksys.twitter_api.controllers;
 
+
+import com.cooksys.twitter_api.dtos.*;
+
 import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -50,9 +53,19 @@ public class TweetController {
         tweetService.addLikeToTweet(id, credentials);
     }
 
+    @GetMapping("/{id}/likes")
+    public List<UserResponseDto> getTweetLikes(@PathVariable Long id) {
+        return tweetService.getTweetLikes(id);
+    }
+
     @GetMapping("/{id}/tags")
     public List<HashtagDto> getTweetByTags(@PathVariable Long id) {
-    	return tweetService.getTweetByTags(id);
+        return tweetService.getTweetByTag(id);
+    }
+
+    @PostMapping("/{id}/repost")
+    public TweetResponseDto repostTweet(@PathVariable Long id, @RequestBody CredentialsDto credentialsDto) {
+        return tweetService.repostTweet(id, credentialsDto);
     }
 
     @PostMapping

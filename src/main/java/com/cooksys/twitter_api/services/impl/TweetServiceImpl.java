@@ -1,8 +1,10 @@
 package com.cooksys.twitter_api.services.impl;
 
+import com.cooksys.twitter_api.dtos.CredentialsDto;
 import com.cooksys.twitter_api.dtos.HashtagDto;
 import com.cooksys.twitter_api.dtos.TweetRequestDto;
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
+import com.cooksys.twitter_api.dtos.UserResponseDto;
 import com.cooksys.twitter_api.entities.Hashtag;
 import com.cooksys.twitter_api.entities.Tweet;
 import com.cooksys.twitter_api.entities.User;
@@ -11,6 +13,7 @@ import com.cooksys.twitter_api.exceptions.NotAuthorizedException;
 import com.cooksys.twitter_api.exceptions.NotFoundException;
 import com.cooksys.twitter_api.mappers.HashtagMapper;
 import com.cooksys.twitter_api.mappers.TweetMapper;
+import com.cooksys.twitter_api.mappers.UserMapper;
 import com.cooksys.twitter_api.repositories.HashtagRepository;
 import com.cooksys.twitter_api.repositories.TweetRepository;
 import com.cooksys.twitter_api.repositories.UserRepository;
@@ -34,6 +37,7 @@ public class TweetServiceImpl implements TweetService {
     private final HashtagRepository hashtagRepository;
 
     private final HashtagMapper hashtagMapper;
+    private final UserMapper userMapper;
 
     private User getUser(Credentials credentials) {
         Optional<User> optionalUser = userRepository.findByCredentials(credentials);
@@ -94,6 +98,37 @@ public class TweetServiceImpl implements TweetService {
     }
 
     @Override
+
+  public List<HashtagDto> getTweetByTag(Long id) {
+        if(getTweet(id) == null) {
+            throw new Error("Tweet does not exist, try again");
+        }
+        return hashtagMapper.entitiesToDtos(getTweet(id).getHashtags());
+    }
+
+    @Override
+    public List<UserResponseDto> getTweetLikes(Long id) {
+        if(getTweet(id) == null) {
+            throw new Error("Tweet does not exist, try again");
+        }
+        return userMapper.entitiesToDtos(getTweet(id).getLikedByUsers());
+    }
+
+    @Override
+    public TweetResponseDto repostTweet(Long id, CredentialsDto credentialsDto) {
+        Tweet tweet = getTweet(id);
+        List<User> userList = userRepository.findByCredentialsUsername(credentialsDto.getUsername());
+
+        if(tweet == null | userList.isEmpty()) {
+            throw new NotFoundException("Invalid credentials or tweet id. Please try again.");
+        }
+
+        User user = userList.get(0);
+        tweet.setAuthor(user);
+        tweetRepository.saveAndFlush(tweet);
+
+        return tweetMapper.tweetToDto(tweet);
+
     public List<HashtagDto> getTweetByTags(Long id) {
         return hashtagMapper.entitiesToDtos(getTweet(id).getHashtags());
     }

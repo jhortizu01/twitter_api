@@ -1,5 +1,7 @@
 package com.cooksys.twitter_api.services.impl;
 
+import com.cooksys.twitter_api.dtos.UserRequestDto;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,14 +25,53 @@ import com.cooksys.twitter_api.services.UserService;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-	private final UserRepository userRepository;
-	private final UserMapper userMapper;
-	private final TweetMapper tweetMapper;
+    private final UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final TweetMapper tweetMapper;
+  	private final UserRepository userRepository;
 	private final CredentialsMapper credentialsMapper;
+
+    @Override
+    public UserResponseDto getSpecificUser(String username) {
+        List<User> user = userRepository.findByCredentialsUsername(username);
+        if(user.isEmpty()) {
+            throw new NotFoundException("No user with username: " + username);
+        }
+
+        return userMapper.entityToDto(user.get(0));
+    }
+
+    @Override
+    public List<TweetResponseDto> getUserTweets(String username) {
+        List<User> user = userRepository.findByCredentialsUsername(username);
+        if(user.isEmpty()) {
+            throw new NotFoundException("No user with username: " + username);
+        }
+
+        return tweetMapper.entitiesToDtos(user.get(0).getTweets());
+    }
+
+    @Override
+    public UserResponseDto updateUser(String username, UserRequestDto userRequestDto) {
+
+        List<User> user = userRepository.findByCredentialsUsername(username);
+
+        if(user.isEmpty()) {
+            throw new NotFoundException("No user with username: " + username);
+        }
+
+        User userEntity = userMapper.userRequestDtoToEntity(userRequestDto);
+
+        user.get(0).setCredentials(userEntity.getCredentials());
+        user.get(0).setProfile(userEntity.getProfile());
+        return userMapper.entityToDto(userRepository.saveAndFlush(user.get(0)));
+    }
 
 	@Override
 	public List<UserResponseDto> getAllActiveUsers() {
@@ -62,6 +103,8 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void unfollow(CredentialsDto credentials, String username) {
 
+	}
+  
 		Credentials creds = credentialsMapper.dtoToEntity(credentials);
 
 		User currentUser = userRepository.findByCredentials(creds).get();

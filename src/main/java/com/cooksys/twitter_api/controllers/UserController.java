@@ -1,5 +1,7 @@
 package com.cooksys.twitter_api.controllers;
 
+import com.cooksys.twitter_api.dtos.UserRequestDto;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,10 +30,23 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
-
     private final UserService userService;
     private final TweetService tweetService;
 
+    @GetMapping("/@{username}")
+    public UserResponseDto getSpecificUser(@PathVariable String username) {
+        return userService.getSpecificUser(username);
+    }
+
+    @GetMapping("/@{username}/tweets")
+    public List<TweetResponseDto> getUsersTweets(@PathVariable String username) {
+        return userService.getUserTweets(username);
+    }
+
+    @PatchMapping("/@{username}")
+    public UserResponseDto updateUser(@PathVariable String username, @RequestBody UserRequestDto userRequestDto) {
+        return userService.updateUser(username, userRequestDto);
+    }
 
 	@GetMapping
 	public List<UserResponseDto> getAllActiveUsers() {

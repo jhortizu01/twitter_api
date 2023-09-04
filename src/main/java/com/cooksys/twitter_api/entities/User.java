@@ -23,10 +23,11 @@ import com.cooksys.twitter_api.entities.embeddable.Profile;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Table(name = "user_table")
+
 @Entity
 @NoArgsConstructor
 @Data
+@Table(name = "user_table")
 public class User {
 
 	@Id

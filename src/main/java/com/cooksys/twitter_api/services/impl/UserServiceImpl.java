@@ -1,5 +1,11 @@
 package com.cooksys.twitter_api.services.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
 import com.cooksys.twitter_api.dtos.CredentialsDto;
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
 import com.cooksys.twitter_api.dtos.UserRequestDto;
@@ -14,12 +20,8 @@ import com.cooksys.twitter_api.mappers.TweetMapper;
 import com.cooksys.twitter_api.mappers.UserMapper;
 import com.cooksys.twitter_api.repositories.UserRepository;
 import com.cooksys.twitter_api.services.UserService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +39,7 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException("No user with username: " + username);
         }
 
-        return userMapper.entityToDto(user.get());
+        return userMapper.entitytoDto(user.get());
     }
 
     @Override
@@ -63,7 +65,7 @@ public class UserServiceImpl implements UserService {
 
         user.get().setCredentials(userEntity.getCredentials());
         user.get().setProfile(userEntity.getProfile());
-        return userMapper.entityToDto(userRepository.saveAndFlush(user.get()));
+        return userMapper.entitytoDto(userRepository.saveAndFlush(user.get()));
     }
 
     @Override
@@ -102,9 +104,7 @@ public class UserServiceImpl implements UserService {
 
         User userToUnfollow = userRepository.findByCredentialsUsername(username).get();
 
-        currentUser.getFollowing().
-
-                remove(userToUnfollow);
+        currentUser.getFollowing().remove(userToUnfollow);
 
         userRepository.saveAndFlush(currentUser);
 
@@ -135,22 +135,47 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto createUser(UserRequestDto userRequestDto) {
-        User user = getUserByUsername(userRequestDto.getCredentials().getUsername());
-        if (user == null) {
-            user = userMapper.userRequestDtoToEntity(userRequestDto);
-        } else if (user.isDeleted()) {
-            user.setCredentials(user.getCredentials());
-            user.setProfile(user.getProfile());
-            user.setDeleted(false);
-        } else
-            throw new BadRequestException("Username must be unique");
-        validateUser(user);
-        return userMapper.entityToDto(userRepository.saveAndFlush(user));
+    	
+    	if(userRequestDto.getCredentials() == null || userRequestDto.getProfile() == null || userRequestDto.getCredentials().getUsername() == null || userRequestDto.getCredentials().getPassword() == null || userRequestDto.getProfile().getEmail() == null) {
+    	    throw new BadRequestException("Necessary fields must not be empty");
+    	}
+    	
+    	Optional<User> user = userRepository.findByUsername(userRequestDto.getCredentials().getUsername());
+        //getUserByUsername(userRequestDto.getCredentials().getUsername());
+        if(user.isPresent() && !user.get().isDeleted()) {
+        	
+        	throw new BadRequestException("User is already present in database");
+        }
+        
+        if(user.isPresent()) {
+        	
+        	user.get().setDeleted(false);
+        	
+			return userMapper.entitytoDto(userRepository.saveAndFlush(user.get()));
+
+        }
+        
+        User newUser = userMapper.userRequestDtoToEntity(userRequestDto);
+        
+        return userMapper.entitytoDto(userRepository.saveAndFlush(newUser));
+        
+        
+        
+//        if (	 .isEmpty()){
+//            user = userMapper.userRequestDtoToEntity(userRequestDto);
+//        } else if (user.get().isDeleted()) {
+//            user.get().setCredentials(user.get().getCredentials());
+//            user.setProfile(user.getProfile());
+//            user.setDeleted(false);
+//        } else
+//            throw new BadRequestException("Username must be unique");
+//        validateUser(user);
+//        return userMapper.entityToDto(userRepository.saveAndFlush(user));
     }
 
-    private User getUserByUsername(String username) {
+    private Optional<User> getUserByUsername(String username) {
         Optional<User> optionalUser = userRepository.findByCredentialsUsername(username);
-        return optionalUser.orElse(null);
+        return optionalUser;
     }
 
     private void validateUser(User user) {

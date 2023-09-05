@@ -1,11 +1,13 @@
 package com.cooksys.twitter_api.exceptions;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.Serial;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter

@@ -1,11 +1,5 @@
 package com.cooksys.twitter_api.services.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-
 import com.cooksys.twitter_api.dtos.CredentialsDto;
 import com.cooksys.twitter_api.dtos.TweetResponseDto;
 import com.cooksys.twitter_api.dtos.UserRequestDto;
@@ -20,8 +14,12 @@ import com.cooksys.twitter_api.mappers.TweetMapper;
 import com.cooksys.twitter_api.mappers.UserMapper;
 import com.cooksys.twitter_api.repositories.UserRepository;
 import com.cooksys.twitter_api.services.UserService;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -123,6 +121,17 @@ public class UserServiceImpl implements UserService {
         userRepository.saveAndFlush(currentUser);
 
     }
+    @Override
+    public List<UserResponseDto> getFollowers(String username) {
+        User user = userRepository.findByCredentialsUsername(username).get();
+        return userMapper.entitiesToDtos(user.getFollowers());
+    }
+
+    @Override
+    public List<UserResponseDto> getFollowedUsers(String username) {
+        User user = userRepository.findByCredentialsUsername(username).get();
+        return userMapper.entitiesToDtos(user.getFollowing());
+    }
 
     @Override
     public List<TweetResponseDto> getMentions(Long id) {
@@ -171,6 +180,14 @@ public class UserServiceImpl implements UserService {
 //            throw new BadRequestException("Username must be unique");
 //        validateUser(user);
 //        return userMapper.entityToDto(userRepository.saveAndFlush(user));
+    }
+
+    @Override
+    public UserResponseDto deleteUser(String username, CredentialsDto credentials) {
+        Credentials creds = credentialsMapper.dtoToEntity(credentials);
+        User toDelete = userRepository.findByCredentials(creds).get();
+        toDelete.setDeleted(true);
+        return userMapper.entitytoDto(userRepository.saveAndFlush(toDelete));
     }
 
     private Optional<User> getUserByUsername(String username) {

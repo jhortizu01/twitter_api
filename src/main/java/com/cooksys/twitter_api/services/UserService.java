@@ -26,4 +26,9 @@ public interface UserService {
 
     UserResponseDto createUser(UserRequestDto userRequestDto);
 
+    List<UserResponseDto> getFollowers(String username);
+
+    List<UserResponseDto> getFollowedUsers(String username);
+
+    UserResponseDto deleteUser(String username, CredentialsDto credentials);
 }

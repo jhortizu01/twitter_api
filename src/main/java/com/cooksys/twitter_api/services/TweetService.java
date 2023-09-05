@@ -33,4 +33,8 @@ public interface TweetService {
     List<TweetResponseDto> getUsernameMentions(String username);
 
     TweetResponseDto createTweet(TweetRequestDto tweetRequestDto);
+
+    List<TweetResponseDto> getRepostOfTweetById(Long id);
+
+    ContextDto getContextForTweet(Long id);
 }

@@ -14,6 +14,7 @@ import com.cooksys.twitter_api.entities.Tweet;
 import com.cooksys.twitter_api.entities.User;
 import com.cooksys.twitter_api.entities.embeddable.Credentials;
 import com.cooksys.twitter_api.exceptions.BadRequestException;
+import com.cooksys.twitter_api.exceptions.NotAuthorizedException;
 import com.cooksys.twitter_api.exceptions.NotFoundException;
 import com.cooksys.twitter_api.mappers.CredentialsMapper;
 import com.cooksys.twitter_api.mappers.TweetMapper;
@@ -60,12 +61,37 @@ public class UserServiceImpl implements UserService {
         if (user.isEmpty()) {
             throw new NotFoundException("No user with username: " + username);
         }
-
+        
+        if(userRequestDto.getCredentials() == null) {
+        	throw new NotAuthorizedException("Credentials are not valid");
+        }
+        
+        if(userRequestDto.getCredentials().getUsername() == null) {
+        	
+        	throw new NotAuthorizedException("username is not valid");
+        }
+        
+        if(userRequestDto.getCredentials().getPassword() == null) {
+        	
+        	throw new NotAuthorizedException("Password is not valid");
+        	
+        }
+        
+        if(userRequestDto.getProfile() == null){
+        	
+        	throw new NotAuthorizedException("User profile is not valid");
+        	
+        }
+        		
+        	
+        		
         User userEntity = userMapper.userRequestDtoToEntity(userRequestDto);
 
-        user.get().setCredentials(userEntity.getCredentials());
-        user.get().setProfile(userEntity.getProfile());
-        return userMapper.entitytoDto(userRepository.saveAndFlush(user.get()));
+//        user.get().setCredentials(userEntity.getCredentials());
+//        user.get().setProfile(userEntity.getProfile());
+        
+        user.get().getCredentials().setUsername(username);;
+        return userMapper.entitytoDto(user.get());
     }
 
     @Override
@@ -98,29 +124,59 @@ public class UserServiceImpl implements UserService {
     @Override
     public void unfollow(CredentialsDto credentials, String username) {
 
-        Credentials creds = credentialsMapper.dtoToEntity(credentials);
+    	Optional<User> userToFollow = userRepository.findByCredentialsUsername(username);
+    	Optional<User> currentUser = userRepository.findByCredentialsUsername(credentials.getUsername());
+    	
+    	
+    	if(userToFollow.isEmpty() || userToFollow.get().isDeleted() || currentUser.isEmpty() || currentUser.get().isDeleted() || currentUser.get().getFollowing().contains(userToFollow.get()) || userToFollow.get().getFollowers().contains(currentUser.get())) {
+			throw new BadRequestException("nah");
+		}
+    	
+		if(credentials.getUsername() == null) {
+			throw new NotAuthorizedException("Username is not given");
+		}
+		
+		
+		if(credentials.getPassword() == null) {
+			throw new NotAuthorizedException("Password is not given");
+		}
 
-        User currentUser = userRepository.findByCredentials(creds).get();
+        currentUser.get().getFollowing().remove(userToFollow.get());
 
-        User userToUnfollow = userRepository.findByCredentialsUsername(username).get();
-
-        currentUser.getFollowing().remove(userToUnfollow);
-
-        userRepository.saveAndFlush(currentUser);
+        userRepository.saveAndFlush(currentUser.get());
+        
+        userToFollow.get().getFollowers().remove(currentUser.get());
+        
+        userRepository.saveAndFlush(userToFollow.get());
 
     }
 
     @Override
     public void follow(CredentialsDto credentials, String username) {
-        Credentials creds = credentialsMapper.dtoToEntity(credentials);
+    	Optional<User> userToFollow = userRepository.findByCredentialsUsername(username);
+    	Optional<User> currentUser = userRepository.findByCredentialsUsername(credentials.getUsername());
+    	
+    	
+    	if(userToFollow.isEmpty() || userToFollow.get().isDeleted() || currentUser.isEmpty() || currentUser.get().isDeleted() || currentUser.get().getFollowing().contains(userToFollow.get()) || userToFollow.get().getFollowers().contains(currentUser.get())) {
+			throw new BadRequestException("nah");
+		}
+    	
+		if(credentials.getUsername() == null) {
+			throw new NotAuthorizedException("Username is not given");
+		}
+		
+		
+		if(credentials.getPassword() == null) {
+			throw new NotAuthorizedException("Password is not given");
+		}
 
-        User currentUser = userRepository.findByCredentials(creds).get();
+        currentUser.get().getFollowing().add(userToFollow.get());
 
-        User userToFollow = userRepository.findByCredentialsUsername(username).get();
-
-        currentUser.getFollowing().add(userToFollow);
-
-        userRepository.saveAndFlush(currentUser);
+        userRepository.saveAndFlush(currentUser.get());
+        
+        userToFollow.get().getFollowers().add(currentUser.get());
+        
+        userRepository.saveAndFlush(userToFollow.get());
 
     }
 

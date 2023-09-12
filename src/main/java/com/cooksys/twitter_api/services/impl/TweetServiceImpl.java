@@ -17,9 +17,7 @@ import com.cooksys.twitter_api.services.TweetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,6 +65,25 @@ public class TweetServiceImpl implements TweetService {
     @Override
     public TweetResponseDto getTweetById(Long id) {
         return tweetMapper.tweetToDto(getTweet(id));
+    }
+
+    @Override
+    public TweetResponseDto replyTweetById(Long id, TweetRequestDto tweetRequestDto) {
+        Tweet tweetToReplyTo = getTweet(id);
+        User user = getUser(tweetRequestDto.getCredentials());
+        Tweet tweet = new Tweet();
+        tweet.setInReplyTo(tweetToReplyTo);
+        tweet.setContent(tweetRequestDto.getContent());
+        tweet.setAuthor(user);
+        parseForUserMentions(tweet);
+        parseForHashtags(tweet);
+        return tweetMapper.tweetToDto(tweetRepository.saveAndFlush(tweet));
+    }
+
+    @Override
+    public List<TweetResponseDto> getRepliesToTweetById(Long id) {
+        Tweet tweet = getTweet(id);
+        return tweetMapper.entitiesToDtos(tweet.getReplies());
     }
 
 
@@ -125,6 +142,12 @@ public class TweetServiceImpl implements TweetService {
         return tweetMapper.tweetToDto(tweet);
     }
 
+    @Override
+    public List<TweetResponseDto> getRepostOfTweetById(Long id) {
+        Tweet tweet = getTweet(id);
+        return tweetMapper.entitiesToDtos(tweet.getReposts());
+    }
+
     // TODO: Add code to sort response in reverse chronological order
     @Override
     public List<TweetResponseDto> getUsernameMentions(String username) {
@@ -145,6 +168,35 @@ public class TweetServiceImpl implements TweetService {
         parseForUserMentions(tweet);
         parseForHashtags(tweet);
         return tweetMapper.tweetToDto(tweetRepository.saveAndFlush(tweet));
+    }
+
+    @Override
+    public ContextDto getContextForTweet(Long id) {
+        Tweet tweet = getTweet(id);
+        ContextDto responseDto = new ContextDto();
+
+        List<Tweet> tweetsBefore = new ArrayList<>();
+        Tweet actualTweet = tweet;
+        while (actualTweet.getInReplyTo() != null) {
+            actualTweet = actualTweet.getInReplyTo();
+            if (!actualTweet.isDeleted())
+                tweetsBefore.add(actualTweet);
+        }
+
+        List<Tweet> tweetsAfter = new ArrayList<>();
+        Queue<Tweet> tweetQueue = new LinkedList<>();
+        tweetQueue.addAll(tweet.getReplies());
+        while (tweetQueue.size() > 0) {
+            Tweet tweetActual = tweetQueue.poll();
+            if (!tweetActual.isDeleted())
+                tweetsAfter.add(tweetActual);
+            tweetQueue.addAll(tweetActual.getReplies());
+        }
+
+        responseDto.setTarget(tweetMapper.tweetToDto(tweet));
+        responseDto.setBefore(tweetMapper.entitiesToDtos(tweetsBefore));
+        responseDto.setAfter(tweetMapper.entitiesToDtos(tweetsAfter));
+        return responseDto;
     }
 
     public void parseForHashtags(Tweet tweet) {

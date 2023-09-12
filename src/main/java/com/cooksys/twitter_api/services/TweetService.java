@@ -1,5 +1,7 @@
 package com.cooksys.twitter_api.services;
 
+import com.cooksys.twitter_api.dtos.TweetRequestDto;
+import com.cooksys.twitter_api.dtos.TweetResponseDto;
 import com.cooksys.twitter_api.dtos.*;
 import com.cooksys.twitter_api.entities.Tweet;
 import com.cooksys.twitter_api.entities.embeddable.Credentials;
@@ -14,6 +16,10 @@ public interface TweetService {
 
     TweetResponseDto getTweetById(Long id);
 
+    TweetResponseDto replyTweetById(Long id, TweetRequestDto tweetRequestDto);
+
+    List<TweetResponseDto> getRepliesToTweetById(Long id);
+
     TweetResponseDto deleteTweetById(Long id, Credentials credentials);
 
     void addLikeToTweet(Long id, Credentials credentials);
@@ -27,4 +33,8 @@ public interface TweetService {
     List<TweetResponseDto> getUsernameMentions(String username);
 
     TweetResponseDto createTweet(TweetRequestDto tweetRequestDto);
+
+    List<TweetResponseDto> getRepostOfTweetById(Long id);
+
+    ContextDto getContextForTweet(Long id);
 }

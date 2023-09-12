@@ -1,5 +1,7 @@
 package com.cooksys.twitter_api.controllers;
 
+import com.cooksys.twitter_api.dtos.TweetRequestDto;
+import com.cooksys.twitter_api.dtos.TweetResponseDto;
 
 import com.cooksys.twitter_api.dtos.*;
 import com.cooksys.twitter_api.entities.embeddable.Credentials;
@@ -28,6 +30,16 @@ public class TweetController {
         return tweetService.getTweetById(id);
     }
 
+    @PostMapping("/{id}/reply")
+    @ResponseStatus(HttpStatus.CREATED)
+    public TweetResponseDto replyTweetById(@PathVariable Long id, @RequestBody TweetRequestDto tweetRequestDto) {
+        return tweetService.replyTweetById(id, tweetRequestDto);
+    }
+
+    @GetMapping("/{id}/replies")
+    public List<TweetResponseDto> getReplyToTweetById(@PathVariable Long id) {
+        return tweetService.getRepliesToTweetById(id);
+    }
     @DeleteMapping("/{id}")
     public TweetResponseDto deleteTweetById(@PathVariable Long id, @RequestBody Credentials credentials) {
         return tweetService.deleteTweetById(id, credentials);
@@ -51,6 +63,16 @@ public class TweetController {
     @PostMapping("/{id}/repost")
     public TweetResponseDto repostTweet(@PathVariable Long id, @RequestBody CredentialsDto credentialsDto) {
         return tweetService.repostTweet(id, credentialsDto);
+    }
+
+    @GetMapping("/{id}/reposts")
+    public List<TweetResponseDto> getRepostOfTweetById(@PathVariable Long id) {
+        return tweetService.getRepostOfTweetById(id);
+    }
+
+    @GetMapping("/{id}/context")
+    public ContextDto getContextForTweet(@PathVariable Long id) {
+        return tweetService.getContextForTweet(id);
     }
 
     @PostMapping

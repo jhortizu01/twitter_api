@@ -3,6 +3,7 @@
 ## Table of Contents
 - [Abstract](#abstract)
 - [Technologies](#technologies)
+- [Endpoints](#endpoints)
 - [Entity Relationship Diagram](#entity-relationship-diagram)
 - [Install + Setup](#set-up)
 - [Contributors](#contributors)
@@ -17,6 +18,18 @@ Successfully accomplished this project within the Fast Track'd program through C
 - JPA
 - Postman
 - PGAdmin
+
+## Endpoints
+In this project I implemented the following endpoints:
+
+GET  validate/username/exists/@{​​​​​​username}​​​​​​
+GET    users/@{​​​​​​username}​​​​​​
+PATCH  users/@{​​​​​​username}​​​​​​
+GET    users/@{​​​​​​username}​​​​​​/tweets
+POST   tweets/{​​​​​​id}​​​​​​/repost
+GET    tweets/{​​​​​​id}​​​​​​/tags
+GET    tweets/{​​​​​​id}​​​​​​/likes
+GET    tag
 
 ## Entity Relationship Diagram
 ![entity](https://github.com/jhortizu01/twitter_api/assets/21073095/c66e8808-527a-4024-9cd9-33ee6bfc3477)

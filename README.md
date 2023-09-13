@@ -33,4 +33,4 @@ Successfully accomplished this project within the Fast Track'd program through C
 [Taryn Orlemann](https://github.com/torlemann)
 
 ## Project Specs
-The project spec & rubric can be found [here](https://frontend.turing.edu/projects/overlook.html)
+The project spec & rubric can be found [here](./ProjectSpecs.md)
